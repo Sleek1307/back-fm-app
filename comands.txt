@@ -1,0 +1,2 @@
+comando de inicio del back => npm run dev 
+comando de inicio del front => npm run start

@@ -1,0 +1,62 @@
+-------VOLCADO DE DATOS-----------
+VENTAS
+INSERT INTO `purchases` 
+    (`idPurchase`, `idProvider`, `costPurchase`, `date`, `type_operation`) 
+VALUES 
+    ('1', '01', '550000', '2022-05-13', 'compra'),
+    ('2', '01', '240000', '2022-05-13', 'compra'),
+    ('3', '01', '1100000', '2022-05-13', 'compra'), 
+    ('4', '02', '250000', '2022-05-13', 'compra'), 
+    ('05', '01', '550000', '2022-05-13', 'compra'), 
+    ('6', '01', '1100000', '2022-05-13', 'compra'), 
+    ('7', '01', '2000000', '2022-05-13', 'compra'), 
+    ('8', '01', '250000', '2022-05-13', 'compra'), 
+    ('9', '01', '300000', '2022-05-13', 'compra')
+
+-------ACTUALIZAR PRODUCTOS-------
+DELIMITER $$
+CREATE PROCEDURE updateProductInPurchase(IN id_product VARCHAR(11), IN amount INT(11))
+BEGIN
+    UPDATE products
+    SET amount = (SELECT amount FROM products WHERE idProduct = id_product) + amount, 
+        fullAmount = (SELECT fullAmount FROM products WHERE idProduct = '08') + amount
+    WHERE idProduct = id_product
+END$$
+DELIMITER
+
+------INSERTAR LOS PRODUCTOS DE LA COMPRA------
+INSERT INTO purchases_products (idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES(3, '02', 11, 11, 50000, 550000), (3, '04', 11, 11, 50000, 550000)
+
+INSERT INTO purchases_products (idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES  (1, '02', 3, 3, 50000, 150000), (1, '04', 3, 3, 50000, 150000), 
+        (1, '06', 2, 2, 50000, 100000),(1, '07', 3, 3, 50000, 150000)
+
+INSERT INTO purchases_products (idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES(2, '01', 3, 3, 40000, 120000), (2, '09', 3, 3, 40000, 120000)
+
+INSERT INTO purchases_products (idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES (4, '04', 5, 5, 50000, 250000)
+
+INSERT INTO purchases_products(idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES (5, '06', 11, 11, 50000, 550000)
+
+INSERT INTO purchases_products(idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES (6, '06', 11, 11, 50000, 550000), (6, '02', 11, 11, 50000, 550000)
+
+INSERT INTO purchases_products(idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES (7, '01', 25, 25, 40000, 2000000), (7, '09', 25, 25, 40000, 2000000)
+
+INSERT INTO purchases_products (idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES (8, '08', 5, 5, 50000, 250000)
+
+INSERT INTO purchases_products (idPurchase, idProduct, amount, amountRemaining, cost, total)
+VALUES (9, '06', 6, 6, 50000, 300000)
+
+---------------------------//--------------------------------------
+EXTRAER LAS COMPRAS MAS ANTIGUAS CON EXISTENCIA
+
+SELECT MIN(idPurchase), amount  FROM purchases_products WHERE idProduct= '02' AND amountRemaining > 0
+
+INSERT INTO sales_products(idSale, idProduct, idPurchase, amount, saleValue, profit) 
+            VALUES((SELECT MAX(idSale) FROM sales), '${item.idProduct}',${purchase_product.purchase}, ${amountSale}, ${item.value}, ${item.value - purchase_product.cost});
